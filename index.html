@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thapar COE SGPA/CGPA Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles inspired by Material You */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa; /* Lighter gray background */
+        }
+        
+        /* Custom properties for a Material You-like theme */
+        :root {
+            --color-primary: #6366f1; /* Indigo */
+            --color-primary-hover: #4f46e5;
+            --color-secondary: #ec4899; /* Pink */
+            --color-surface: #ffffff;
+            --color-on-surface: #1f2937;
+            --color-on-surface-variant: #6b7280;
+            --color-outline: #e5e7eb;
+            --shadow-elevation-1: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-elevation-2: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-elevation-3: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        .card {
+            background-color: var(--color-surface);
+            border-radius: 24px; /* More pronounced rounding */
+            box-shadow: var(--shadow-elevation-2);
+            transition: all 0.3s ease-in-out;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-elevation-3);
+        }
+
+        .btn-primary {
+            background-color: var(--color-primary);
+            color: white;
+            border-radius: 9999px; /* Pill shape */
+            padding: 12px 24px;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: var(--color-primary-hover);
+        }
+
+        .btn-danger {
+            background-color: #ef4444; /* Red */
+            color: white;
+            border-radius: 9999px; /* Pill shape */
+            padding: 12px 24px;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+
+        .grade-select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%236366f1%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22/%3E%3C/svg%3E');
+            background-repeat: no-repeat;
+            background-position: right .9em top 50%;
+            background-size: .65em auto;
+            border-radius: 16px;
+            border-color: var(--color-outline);
+            background-color: #f8f9fa;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Main Container -->
+    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+
+        <!-- Header -->
+        <header class="text-center mb-10">
+            <h1 class="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-pink-500">Thapar COE Calculator</h1>
+            <p class="text-lg md:text-xl text-gray-500 mt-2">SGPA & CGPA for BE-COE 2024 Syllabus</p>
+        </header>
+
+        <!-- Main Content -->
+        <main class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+            <!-- Left Column: Semesters -->
+            <div class="lg:col-span-2 space-y-8" id="semesters-container">
+                <!-- Semester cards will be dynamically inserted here -->
+            </div>
+
+            <!-- Right Column: Results & Controls -->
+            <div class="lg:col-span-1">
+                <div class="sticky top-8 space-y-8">
+                    <!-- Results Card -->
+                    <div class="card p-6">
+                        <h2 class="text-2xl font-bold mb-4 text-[var(--color-on-surface)] border-b border-[var(--color-outline)] pb-3">Results</h2>
+                        <div class="space-y-5 mt-5">
+                            <div>
+                                <p class="text-sm font-medium text-[var(--color-on-surface-variant)]">CGPA</p>
+                                <p id="cgpa-result" class="text-5xl font-bold text-[var(--color-primary)]">0.00</p>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-[var(--color-on-surface-variant)]">Total Credits Completed</p>
+                                <p id="total-credits-result" class="text-3xl font-semibold text-[var(--color-on-surface)]">0.0</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Controls Card -->
+                    <div class="card p-6">
+                        <h2 class="text-2xl font-bold mb-4 text-[var(--color-on-surface)] border-b border-[var(--color-outline)] pb-3">Controls</h2>
+                        <div class="space-y-4 mt-5">
+                            <div>
+                                <label for="semester-adder" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">Add Semester</label>
+                                <select id="semester-adder" class="w-full text-gray-700 py-3 px-4 pr-8 focus:outline-none focus:bg-white focus:border-indigo-500 grade-select">
+                                    <!-- Options will be dynamically added -->
+                                </select>
+                            </div>
+                            <button id="add-semester-btn" class="w-full btn-primary">
+                                Add Semester
+                            </button>
+                            <button id="reset-all-btn" class="w-full btn-danger mt-2">
+                                Reset All
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="text-center mt-16 py-6 border-t border-[var(--color-outline)]">
+            <p class="text-gray-500">Designed with Material You in mind for TIET students.</p>
+        </footer>
+    </div>
+
+    <script>
+        // --- DATA ---
+        const courseData = {
+            1: { name: "Semester I", credits: 18, courses: [ { code: "UCB009", name: "Chemistry", credits: 4 }, { code: "UES103", name: "Programming for Problem Solving", credits: 4 }, { code: "UES013", name: "Electrical & Electronics Engineering", credits: 4.5 }, { code: "UEN008", name: "Energy and Environment", credits: 2 }, { code: "UMA022", name: "Calculus for Engineers", credits: 3.5 } ] },
+            2: { name: "Semester II", credits: 18, courses: [ { code: "UPH013", name: "Physics", credits: 4.5 }, { code: "UES101", name: "Engineering Drawing", credits: 4 }, { code: "UHU003", name: "Professional Communication", credits: 3 }, { code: "UES102", name: "Manufacturing Processes", credits: 3 }, { code: "UMA023", name: "Differential Equations and Linear Algebra", credits: 3.5 } ] },
+            3: { name: "Semester III", credits: 24.5, courses: [ { code: "UCS303", name: "Operating System", credits: 4 }, { code: "UTA018", name: "Object Oriented Programming", credits: 4 }, { code: "UCS301", name: "Data Structures", credits: 4 }, { code: "UCS405", name: "Discrete Mathematical Structures", credits: 3.5 }, { code: "UTA016", name: "Engineering Design Project I", credits: 3 }, { code: "UMA021", name: "Numerical Linear Algebra", credits: 4 }, { code: "UHU050", name: "Evolutionary Psychology", credits: 1 }, { code: "UCS320", name: "Intro to Sustainable Green Computing", credits: 1 } ] },
+            4: { name: "Semester IV", credits: 24, courses: [ { code: "UCS415", name: "Design and Analysis of Algorithms", credits: 4 }, { code: "UCS310", name: "Database Management Systems", credits: 4 }, { code: "UES022", name: "Quantum Materials", credits: 3 }, { code: "UCS411", name: "Artificial Intelligence", credits: 4 }, { code: "UMA401", name: "Probability and Statistics", credits: 4 }, { code: "UTA024", name: "Engineering Design Project II", credits: 3 }, { code: "UTD003", name: "Aptitude Skills Building", credits: 2 } ] },
+            5: { name: "Semester V", credits: 22, courses: [ { code: "UML501", name: "Machine Learning", credits: 4.0 }, { code: "UCS414", name: "Computer Networks", credits: 4.0 }, { code: "UCS615", name: "Image Processing", credits: 4.0 }, { code: "UCS503", name: "Software Engineering", credits: 4.0 }, { code: "UCS510", name: "Computer Architecture & Organization", credits: 3.0 }, { code: "PE-I", name: "Elective-I", credits: 3.0 } ] },
+            6: { name: "Semester VI", credits: 22.5, courses: [ { code: "UCS701", name: "Theory of Computation", credits: 3.5 }, { code: "UMA035", name: "Optimization Techniques", credits: 4.0 }, { code: "UCS617", name: "Microprocessor-Based Systems Design", credits: 4.0 }, { code: "UTA025", name: "Innovation and Entrepreneurship", credits: 3.0 }, { code: "PE-II", name: "Elective-II", credits: 3.0 }, { code: "PE-III", name: "Elective-III", credits: 3.0 }, { code: "GE", name: "Generic Elective", credits: 2.0 } ] },
+            7: { name: "Semester VII", credits: 18, courses: [ { code: "UCS802", name: "Compiler Construction", credits: 4.0 }, { code: "UHU005", name: "Humanities for Engineers", credits: 3.0 }, { code: "PE-IV", name: "Elective-IV", credits: 3.0 }, { code: "UCS797", name: "Capstone Project", credits: 8.0 } ] },
+            8: { name: "Semester VIII", credits: 15, courses: [ { code: "UCS898/899/900", name: "Project / Start-up Semester", credits: 15.0 } ] }
+        };
+
+        const gradePoints = { 'A': 10, 'A-': 9, 'B': 8, 'B-': 7, 'C': 6, 'D': 4, 'E': 0, 'F': 0, 'I': -1, 'X': -1, 'Select': -1 };
+        const grades = ['A', 'A-', 'B', 'B-', 'C', 'D', 'E', 'F', 'I', 'X'];
+
+        // --- STATE ---
+        let activeSemesters = new Set();
+
+        // --- DOM ELEMENTS ---
+        const semestersContainer = document.getElementById('semesters-container');
+        const semesterAdder = document.getElementById('semester-adder');
+        const addSemesterBtn = document.getElementById('add-semester-btn');
+        const resetAllBtn = document.getElementById('reset-all-btn');
+        const cgpaResultEl = document.getElementById('cgpa-result');
+        const totalCreditsResultEl = document.getElementById('total-credits-result');
+
+        // --- FUNCTIONS ---
+
+        function createGradeSelector(semesterId, courseCode) {
+            const select = document.createElement('select');
+            select.className = 'w-full text-gray-700 py-2 px-3 focus:outline-none focus:bg-white focus:border-indigo-500 grade-select';
+            select.dataset.semester = semesterId;
+            select.dataset.course = courseCode;
+
+            const defaultOption = document.createElement('option');
+            defaultOption.textContent = 'Select';
+            select.appendChild(defaultOption);
+
+            grades.forEach(grade => {
+                const option = document.createElement('option');
+                option.value = grade;
+                option.textContent = grade;
+                select.appendChild(option);
+            });
+            
+            select.addEventListener('change', calculateAll);
+            return select;
+        }
+
+        function renderSemester(semesterId) {
+            if (activeSemesters.has(semesterId)) return;
+            activeSemesters.add(semesterId);
+
+            const semData = courseData[semesterId];
+            const card = document.createElement('div');
+            card.className = 'card p-6 fade-in';
+            card.id = `semester-card-${semesterId}`;
+            card.dataset.semesterId = semesterId;
+
+            let coursesHtml = semData.courses.map(course => `
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-center py-4 border-b border-[var(--color-outline)] last:border-b-0">
+                    <div class="md:col-span-3">
+                        <p class="font-semibold text-[var(--color-on-surface)]">${course.name}</p>
+                        <p class="text-sm text-[var(--color-on-surface-variant)]">${course.code}</p>
+                    </div>
+                    <div class="md:col-span-1 text-left md:text-center">
+                        <p class="text-[var(--color-on-surface-variant)]"><span class="font-medium text-[var(--color-on-surface)]">${course.credits}</span> credits</p>
+                    </div>
+                    <div class="md:col-span-1" id="select-container-${semesterId}-${course.code}">
+                        <!-- Grade selector will be inserted here -->
+                    </div>
+                </div>
+            `).join('');
+
+            card.innerHTML = `
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h2 class="text-3xl font-bold text-[var(--color-on-surface)]">${semData.name}</h2>
+                        <p class="text-md text-[var(--color-on-surface-variant)]">${semData.credits} total credits</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm font-medium text-[var(--color-on-surface-variant)]">SGPA</p>
+                        <p id="sgpa-result-${semesterId}" class="text-3xl font-bold text-[var(--color-primary)]">0.00</p>
+                    </div>
+                </div>
+                <div class="space-y-1 mt-4">${coursesHtml}</div>
+                <button class="remove-semester-btn mt-6 text-pink-500 hover:text-pink-700 text-sm font-medium" data-semester-id="${semesterId}">Remove Semester</button>
+            `;
+
+            semestersContainer.appendChild(card);
+            
+            semData.courses.forEach(course => {
+                const selectContainer = document.getElementById(`select-container-${semesterId}-${course.code}`);
+                const selector = createGradeSelector(semesterId, course.code);
+                selectContainer.appendChild(selector);
+            });
+            
+            card.querySelector('.remove-semester-btn').addEventListener('click', (e) => {
+                removeSemester(e.target.dataset.semesterId);
+            });
+
+            updateSemesterAdder();
+        }
+        
+        function removeSemester(semesterId) {
+            const card = document.getElementById(`semester-card-${semesterId}`);
+            if (card) {
+                card.remove();
+                activeSemesters.delete(semesterId);
+                updateSemesterAdder();
+                calculateAll();
+            }
+        }
+
+        function updateSemesterAdder() {
+            semesterAdder.innerHTML = '';
+            let hasOptions = false;
+            for (const semId in courseData) {
+                if (!activeSemesters.has(semId)) {
+                    hasOptions = true;
+                    const option = document.createElement('option');
+                    option.value = semId;
+                    option.textContent = courseData[semId].name;
+                    semesterAdder.appendChild(option);
+                }
+            }
+            addSemesterBtn.disabled = !hasOptions;
+            addSemesterBtn.style.opacity = hasOptions ? '1' : '0.5';
+        }
+
+        function calculateSGPA(semesterId) {
+            const semData = courseData[semesterId];
+            let totalPoints = 0;
+            let totalCredits = 0;
+
+            semData.courses.forEach(course => {
+                const selector = document.querySelector(`select[data-semester='${semesterId}'][data-course='${course.code}']`);
+                const grade = selector.value;
+                const point = gradePoints[grade];
+
+                if (point > -1) { // -1 means 'Select', 'I', or 'X' which are not counted
+                    totalPoints += point * course.credits;
+                    totalCredits += course.credits;
+                }
+            });
+
+            const sgpa = totalCredits > 0 ? totalPoints / totalCredits : 0;
+            document.getElementById(`sgpa-result-${semesterId}`).textContent = sgpa.toFixed(2);
+            return { totalPoints, totalCredits };
+        }
+
+        function calculateAll() {
+            let cumulativePoints = 0;
+            let cumulativeCredits = 0;
+
+            activeSemesters.forEach(semId => {
+                const { totalPoints, totalCredits } = calculateSGPA(semId);
+                cumulativePoints += totalPoints;
+                cumulativeCredits += totalCredits;
+            });
+
+            const cgpa = cumulativeCredits > 0 ? cumulativePoints / cumulativeCredits : 0;
+            cgpaResultEl.textContent = cgpa.toFixed(2);
+            totalCreditsResultEl.textContent = cumulativeCredits.toFixed(1);
+        }
+        
+        function resetAll() {
+            semestersContainer.innerHTML = '';
+            activeSemesters.clear();
+            updateSemesterAdder();
+            calculateAll();
+        }
+
+        // --- EVENT LISTENERS & INITIALIZATION ---
+        
+        addSemesterBtn.addEventListener('click', () => {
+            const selectedSem = semesterAdder.value;
+            if (selectedSem) {
+                renderSemester(selectedSem);
+                calculateAll();
+            }
+        });
+        
+        resetAllBtn.addEventListener('click', resetAll);
+
+        // Initial setup
+        document.addEventListener('DOMContentLoaded', () => {
+            updateSemesterAdder();
+            renderSemester('1');
+        });
+
+    </script>
+</body>
+</html>
