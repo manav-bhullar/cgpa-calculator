@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thapar COE SGPA/CGPA Calculator</title>
+    <title>Thapar COE SGPA/CGPA Calculator with AI Advisor</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -41,50 +41,105 @@
             box-shadow: var(--shadow-elevation-3);
         }
 
-        .btn-primary {
-            background-color: var(--color-primary);
-            color: white;
+        .btn {
             border-radius: 9999px; /* Pill shape */
             padding: 12px 24px;
             font-weight: 600;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, opacity 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--color-primary);
+            color: white;
         }
         .btn-primary:hover {
             background-color: var(--color-primary-hover);
+        }
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background-color: var(--color-secondary);
+            color: white;
+        }
+        .btn-secondary:hover {
+            background-color: #d946ef;
         }
 
         .btn-danger {
             background-color: #ef4444; /* Red */
             color: white;
-            border-radius: 9999px; /* Pill shape */
-            padding: 12px 24px;
-            font-weight: 600;
-            transition: background-color 0.3s ease;
         }
         .btn-danger:hover {
             background-color: #dc2626;
         }
 
-        .grade-select {
+        .form-input, .form-select {
             -webkit-appearance: none;
             -moz-appearance: none;
             appearance: none;
+            border-radius: 16px;
+            border: 1px solid var(--color-outline);
+            background-color: #f8f9fa;
+            width: 100%;
+            padding: 12px 16px;
+            font-weight: 500;
+        }
+        .form-input:focus, .form-select:focus {
+            outline: 2px solid var(--color-primary);
+            border-color: transparent;
+        }
+
+        .form-select {
             background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%236366f1%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22/%3E%3C/svg%3E');
             background-repeat: no-repeat;
             background-position: right .9em top 50%;
             background-size: .65em auto;
-            border-radius: 16px;
-            border-color: var(--color-outline);
-            background-color: #f8f9fa;
         }
 
-        .fade-in {
-            animation: fadeIn 0.5s ease-in-out;
+        .grade-select {
+            -webkit-appearance: none; -moz-appearance: none; appearance: none;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%236366f1%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22/%3E%3C/svg%3E');
+            background-repeat: no-repeat; background-position: right .9em top 50%; background-size: .65em auto;
+            border-radius: 16px; border-color: var(--color-outline); background-color: #f8f9fa;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .spinner {
+            width: 20px; height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%; border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
         }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        #ai-insights-result ul, #modal-content ul, #goal-plan-result ul { list-style-position: inside; padding-left: 8px; }
+        #ai-insights-result h3, #modal-content h3, #goal-plan-result h3 { font-size: 1.1rem; font-weight: 700; margin-top: 12px; margin-bottom: 4px; color: var(--color-primary); }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 1000; opacity: 0;
+            transition: opacity 0.3s ease; pointer-events: none;
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal-container {
+            background: white; border-radius: 24px; padding: 2rem;
+            max-width: 90%; width: 600px;
+            box-shadow: var(--shadow-elevation-3);
+            transform: scale(0.95); transition: transform 0.3s ease;
+        }
+        .modal-overlay.active .modal-container { transform: scale(1); }
     </style>
 </head>
 <body class="text-gray-800">
@@ -94,8 +149,8 @@
 
         <!-- Header -->
         <header class="text-center mb-10">
-            <h1 class="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-pink-500">Thapar COE Calculator</h1>
-            <p class="text-lg md:text-xl text-gray-500 mt-2">SGPA & CGPA for BE-COE 2024 Syllabus</p>
+            <h1 class="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-pink-500">Thapar COE Academic Assistant</h1>
+            <p class="text-lg md:text-xl text-gray-500 mt-2">SGPA/CGPA Calculator with AI-Powered Study & Project Tools</p>
         </header>
 
         <!-- Main Content -->
@@ -122,6 +177,18 @@
                                 <p id="total-credits-result" class="text-3xl font-semibold text-[var(--color-on-surface)]">0.0</p>
                             </div>
                         </div>
+                        
+                        <!-- AI Advisor Section -->
+                        <div class="mt-8 pt-6 border-t border-[var(--color-outline)]">
+                             <h3 class="text-xl font-bold text-[var(--color-on-surface)] mb-3">AI Performance Advisor</h3>
+                             <div id="ai-insights-result" class="text-sm text-[var(--color-on-surface-variant)] p-4 bg-indigo-50 rounded-lg border border-indigo-200 min-h-[80px]">
+                                Enter grades and click the button to get personalized advice...
+                             </div>
+                             <button id="analyze-btn" class="w-full btn btn-primary mt-4">
+                                 <span id="analyze-btn-text">✨ Get AI Insights</span>
+                                 <div id="analyze-spinner" class="spinner hidden"></div>
+                             </button>
+                        </div>
                     </div>
 
                     <!-- Controls Card -->
@@ -130,16 +197,39 @@
                         <div class="space-y-4 mt-5">
                             <div>
                                 <label for="semester-adder" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">Add Semester</label>
-                                <select id="semester-adder" class="w-full text-gray-700 py-3 px-4 pr-8 focus:outline-none focus:bg-white focus:border-indigo-500 grade-select">
+                                <select id="semester-adder" class="form-select">
                                     <!-- Options will be dynamically added -->
                                 </select>
                             </div>
-                            <button id="add-semester-btn" class="w-full btn-primary">
+                            <button id="add-semester-btn" class="w-full btn btn-primary">
                                 Add Semester
                             </button>
-                            <button id="reset-all-btn" class="w-full btn-danger mt-2">
+                            <button id="reset-all-btn" class="w-full btn btn-danger mt-2">
                                 Reset All
                             </button>
+                        </div>
+                    </div>
+
+                    <!-- CGPA Goal Setter Card -->
+                    <div class="card p-6">
+                        <h2 class="text-2xl font-bold mb-4 text-[var(--color-on-surface)] border-b border-[var(--color-outline)] pb-3">🎯 CGPA Goal Setter</h2>
+                        <div class="space-y-4 mt-5">
+                            <div>
+                                <label for="cgpa-goal-input" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">Desired CGPA</label>
+                                <input type="number" id="cgpa-goal-input" class="form-input" placeholder="e.g., 8.5" step="0.1" min="1" max="10">
+                            </div>
+                            <div>
+                                <label for="cgpa-goal-semester" class="block text-sm font-medium text-[var(--color-on-surface-variant)] mb-2">Achieve by Semester</label>
+                                <select id="cgpa-goal-semester" class="form-select">
+                                    <!-- Options will be dynamically added -->
+                                </select>
+                            </div>
+                            <button id="get-goal-plan-btn" class="w-full btn btn-secondary">
+                                Get AI Plan
+                            </button>
+                        </div>
+                        <div id="goal-plan-result" class="text-sm text-[var(--color-on-surface-variant)] mt-4 p-4 bg-pink-50 rounded-lg border border-pink-200 min-h-[80px]">
+                            Set a goal to see your path to success...
                         </div>
                     </div>
                 </div>
@@ -147,9 +237,16 @@
         </main>
 
         <!-- Footer -->
-        <footer class="text-center mt-16 py-6 border-t border-[var(--color-outline)]">
-            <p class="text-gray-500">Designed with Material You in mind for TIET students.</p>
-        </footer>
+        
+    </div>
+
+    <!-- Modal -->
+    <div id="modal-overlay" class="modal-overlay">
+        <div id="modal-container" class="modal-container">
+            <h2 id="modal-title" class="text-2xl font-bold text-[var(--color-on-surface)] mb-4"></h2>
+            <div id="modal-content" class="text-[var(--color-on-surface-variant)] max-h-[60vh] overflow-y-auto pr-2"></div>
+            <button id="modal-close-btn" class="btn btn-primary mt-6 float-right">Close</button>
+        </div>
     </div>
 
     <script>
@@ -165,11 +262,12 @@
             8: { name: "Semester VIII", credits: 15, courses: [ { code: "UCS898/899/900", name: "Project / Start-up Semester", credits: 15.0 } ] }
         };
 
-        const gradePoints = { 'A': 10, 'A-': 9, 'B': 8, 'B-': 7, 'C': 6, 'D': 4, 'E': 0, 'F': 0, 'I': -1, 'X': -1, 'Select': -1 };
-        const grades = ['A', 'A-', 'B', 'B-', 'C', 'D', 'E', 'F', 'I', 'X'];
+        const gradePoints = { 'A': 10, 'A-': 9, 'B': 8, 'B-': 7, 'C': 6, 'D': 4, 'E': 0, 'F': 0, 'Select': -1 };
+        const grades = ['A', 'A-', 'B', 'B-', 'C', 'D', 'E', 'F'];
 
         // --- STATE ---
         let activeSemesters = new Set();
+        let currentOpenModal = null;
 
         // --- DOM ELEMENTS ---
         const semestersContainer = document.getElementById('semesters-container');
@@ -178,14 +276,27 @@
         const resetAllBtn = document.getElementById('reset-all-btn');
         const cgpaResultEl = document.getElementById('cgpa-result');
         const totalCreditsResultEl = document.getElementById('total-credits-result');
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const analyzeBtnText = document.getElementById('analyze-btn-text');
+        const analyzeSpinner = document.getElementById('analyze-spinner');
+        const aiInsightsResult = document.getElementById('ai-insights-result');
+        const modalOverlay = document.getElementById('modal-overlay');
+        const modalTitle = document.getElementById('modal-title');
+        const modalContent = document.getElementById('modal-content');
+        const modalCloseBtn = document.getElementById('modal-close-btn');
+        const cgpaGoalInput = document.getElementById('cgpa-goal-input');
+        const cgpaGoalSemesterSelect = document.getElementById('cgpa-goal-semester');
+        const getGoalPlanBtn = document.getElementById('get-goal-plan-btn');
+        const goalPlanResult = document.getElementById('goal-plan-result');
 
         // --- FUNCTIONS ---
 
-        function createGradeSelector(semesterId, courseCode) {
+        function createGradeSelector(semesterId, course) {
             const select = document.createElement('select');
             select.className = 'w-full text-gray-700 py-2 px-3 focus:outline-none focus:bg-white focus:border-indigo-500 grade-select';
             select.dataset.semester = semesterId;
-            select.dataset.course = courseCode;
+            select.dataset.courseCode = course.code;
+            select.dataset.courseName = course.name;
 
             const defaultOption = document.createElement('option');
             defaultOption.textContent = 'Select';
@@ -198,8 +309,26 @@
                 select.appendChild(option);
             });
             
-            select.addEventListener('change', calculateAll);
+            select.addEventListener('change', (e) => {
+                calculateAll();
+                toggleStudyPlannerButton(e.target);
+            });
             return select;
+        }
+
+        function toggleStudyPlannerButton(selectElement) {
+            const grade = selectElement.value;
+            const point = gradePoints[grade] || -1;
+            const courseCode = selectElement.dataset.courseCode;
+            const semesterId = selectElement.dataset.semester;
+            const plannerButton = document.getElementById(`study-plan-btn-${semesterId}-${courseCode}`);
+            if (plannerButton) {
+                if (point >= 0 && point < 7) { // C, D, E, F
+                    plannerButton.classList.remove('hidden');
+                } else {
+                    plannerButton.classList.add('hidden');
+                }
+            }
         }
 
         function renderSemester(semesterId) {
@@ -224,6 +353,9 @@
                     <div class="md:col-span-1" id="select-container-${semesterId}-${course.code}">
                         <!-- Grade selector will be inserted here -->
                     </div>
+                    <div class="md:col-span-5 text-right -mt-2">
+                         <button id="study-plan-btn-${semesterId}-${course.code}" data-course-name="${course.name}" data-semester-id="${semesterId}" data-course-code="${course.code}" class="hidden text-xs btn btn-secondary !py-1 !px-3">✨ Get Study Plan</button>
+                    </div>
                 </div>
             `).join('');
 
@@ -239,48 +371,58 @@
                     </div>
                 </div>
                 <div class="space-y-1 mt-4">${coursesHtml}</div>
-                <button class="remove-semester-btn mt-6 text-pink-500 hover:text-pink-700 text-sm font-medium" data-semester-id="${semesterId}">Remove Semester</button>
+                <div class="mt-6 flex justify-between items-center">
+                    <button class="remove-semester-btn text-pink-500 hover:text-pink-700 text-sm font-medium" data-semester-id="${semesterId}">Remove Semester</button>
+                    <button class="project-ideas-btn btn btn-primary !py-2 !px-4" data-semester-id="${semesterId}">✨ Generate Project Ideas</button>
+                </div>
             `;
 
             semestersContainer.appendChild(card);
             
             semData.courses.forEach(course => {
                 const selectContainer = document.getElementById(`select-container-${semesterId}-${course.code}`);
-                const selector = createGradeSelector(semesterId, course.code);
+                const selector = createGradeSelector(semesterId, course);
                 selectContainer.appendChild(selector);
+                
+                const studyPlanBtn = document.getElementById(`study-plan-btn-${semesterId}-${course.code}`);
+                studyPlanBtn.addEventListener('click', getAIStudyPlan);
             });
             
-            card.querySelector('.remove-semester-btn').addEventListener('click', (e) => {
-                removeSemester(e.target.dataset.semesterId);
-            });
+            card.querySelector('.remove-semester-btn').addEventListener('click', (e) => removeSemester(e.target.dataset.semesterId));
+            card.querySelector('.project-ideas-btn').addEventListener('click', getAIProjectIdeas);
 
-            updateSemesterAdder();
+            updateSemesterAdders();
         }
         
         function removeSemester(semesterId) {
             const card = document.getElementById(`semester-card-${semesterId}`);
             if (card) {
                 card.remove();
-                activeSemesters.delete(semesterId);
-                updateSemesterAdder();
+                activeSemesters.delete(String(semesterId));
+                updateSemesterAdders();
                 calculateAll();
             }
         }
 
-        function updateSemesterAdder() {
+        function updateSemesterAdders() {
             semesterAdder.innerHTML = '';
+            cgpaGoalSemesterSelect.innerHTML = '';
             let hasOptions = false;
-            for (const semId in courseData) {
+            let hasGoalOptions = false;
+
+            Object.keys(courseData).forEach(semId => {
                 if (!activeSemesters.has(semId)) {
                     hasOptions = true;
                     const option = document.createElement('option');
                     option.value = semId;
                     option.textContent = courseData[semId].name;
-                    semesterAdder.appendChild(option);
+                    semesterAdder.appendChild(option.cloneNode(true));
+                    cgpaGoalSemesterSelect.appendChild(option);
+                    hasGoalOptions = true;
                 }
-            }
+            });
             addSemesterBtn.disabled = !hasOptions;
-            addSemesterBtn.style.opacity = hasOptions ? '1' : '0.5';
+            getGoalPlanBtn.disabled = !hasGoalOptions;
         }
 
         function calculateSGPA(semesterId) {
@@ -289,11 +431,11 @@
             let totalCredits = 0;
 
             semData.courses.forEach(course => {
-                const selector = document.querySelector(`select[data-semester='${semesterId}'][data-course='${course.code}']`);
+                const selector = document.querySelector(`select[data-semester='${semesterId}'][data-course-code='${course.code}']`);
                 const grade = selector.value;
                 const point = gradePoints[grade];
 
-                if (point > -1) { // -1 means 'Select', 'I', or 'X' which are not counted
+                if (point > -1) { 
                     totalPoints += point * course.credits;
                     totalCredits += course.credits;
                 }
@@ -322,28 +464,236 @@
         function resetAll() {
             semestersContainer.innerHTML = '';
             activeSemesters.clear();
-            updateSemesterAdder();
+            updateSemesterAdders();
             calculateAll();
+            aiInsightsResult.innerHTML = "Enter grades and click the button to get personalized advice...";
+            goalPlanResult.innerHTML = "Set a goal to see your path to success...";
+            cgpaGoalInput.value = '';
         }
+        
+        function simpleMarkdownToHtml(text) {
+            text = text.replace(/### (.*)/g, '<h3>$1</h3>');
+            text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            text = text.replace(/(\r\n|\n|\r)/gm, "<br>");
+            text = text.replace(/(\*|-)\s*(.*)/g, '<ul><li>$2</li></ul>');
+            text = text.replace(/<\/ul><br><ul>/g, '');
+            return text;
+        }
+
+        function showModal(title, content) {
+            modalTitle.textContent = title;
+            modalContent.innerHTML = content;
+            modalOverlay.classList.add('active');
+        }
+
+        function hideModal() {
+            modalOverlay.classList.remove('active');
+        }
+        
+        async function makeApiCall(prompt) {
+            try {
+                const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
+                const apiKey = ""; // Handled by environment
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
+                const result = await response.json();
+                
+                if (result.candidates?.[0]?.content?.parts?.[0]?.text) {
+                    return result.candidates[0].content.parts[0].text;
+                } else {
+                    throw new Error("Received an empty or invalid response from the AI.");
+                }
+            } catch (error) {
+                console.error("AI API Error:", error);
+                return `Sorry, something went wrong. Please try again. <br><br><i>Error: ${error.message}</i>`;
+            }
+        }
+
+        async function getAIInsights() {
+            analyzeBtn.disabled = true;
+            analyzeBtnText.textContent = "Analyzing...";
+            analyzeSpinner.classList.remove('hidden');
+            aiInsightsResult.innerHTML = "Thinking...";
+
+            let gradeData = [];
+            let hasGrades = false;
+            activeSemesters.forEach(semId => {
+                const semData = courseData[semId];
+                let semesterGrades = [];
+                semData.courses.forEach(course => {
+                    const selector = document.querySelector(`select[data-semester='${semId}'][data-course-code='${course.code}']`);
+                    const grade = selector.value;
+                    if (grade !== 'Select') {
+                        hasGrades = true;
+                        semesterGrades.push(`- ${course.name}: ${grade}`);
+                    }
+                });
+                if(semesterGrades.length > 0) {
+                    gradeData.push(`\n**${semData.name}**\n${semesterGrades.join('\n')}`);
+                }
+            });
+
+            if (!hasGrades) {
+                aiInsightsResult.innerHTML = "Please enter at least one grade to get an analysis.";
+                analyzeBtn.disabled = false;
+                analyzeBtnText.textContent = "✨ Get AI Insights";
+                analyzeSpinner.classList.add('hidden');
+                return;
+            }
+
+            const prompt = `You are a friendly academic advisor for a Computer Engineering student at Thapar Institute, India. Analyze their performance based on the data below. The grading scale is A=10, A-=9, B=8, B-=7, C=6, D=4, E/F=0.
+                Student's Performance:
+                ${gradeData.join('\n')}
+                Current CGPA: ${cgpaResultEl.textContent}
+                Your task:
+                1. Start with a brief, positive opening about their CGPA.
+                2. Identify strengths (subjects with grades A, A-).
+                3. Point out areas for attention (grades C, D, E, F).
+                4. Provide 2-3 specific, actionable, and encouraging pieces of advice.
+                Keep the response concise (under 150 words) and supportive. Format using simple Markdown with headings (### Strengths) and bullet points.`;
+            
+            const resultText = await makeApiCall(prompt);
+            aiInsightsResult.innerHTML = simpleMarkdownToHtml(resultText);
+
+            analyzeBtn.disabled = false;
+            analyzeBtnText.textContent = "✨ Get AI Insights";
+            analyzeSpinner.classList.add('hidden');
+        }
+
+        async function getAIStudyPlan(event) {
+            const button = event.currentTarget;
+            const courseName = button.dataset.courseName;
+            const semesterId = button.dataset.semesterId;
+            const courseCode = button.dataset.courseCode;
+            const selector = document.querySelector(`select[data-semester='${semesterId}'][data-course-code='${courseCode}']`);
+            const grade = selector.value;
+
+            showModal(`Study Plan for ${courseName}`, 'Generating your personalized plan with AI...');
+
+            const prompt = `You are an expert academic tutor. A Computer Engineering student at Thapar University received a '${grade}' in '${courseName}'. Create a concise, actionable 7-day study plan to help them improve. Include daily focus topics and suggest one effective study technique (e.g., Feynman technique, active recall, spaced repetition). Keep it under 150 words and use a supportive tone. Format with daily headings (e.g., **Day 1: Topic**).`;
+
+            const resultText = await makeApiCall(prompt);
+            modalContent.innerHTML = simpleMarkdownToHtml(resultText);
+        }
+
+        async function getAIProjectIdeas(event) {
+            const button = event.currentTarget;
+            const semesterId = button.dataset.semesterId;
+            const semData = courseData[semesterId];
+            const courseNames = semData.courses.map(c => c.name).join(', ');
+
+            showModal(`Project Ideas for ${semData.name}`, 'Generating creative project ideas with AI...');
+
+            const prompt = `You are an innovative tech mentor for engineering students. A Computer Engineering student at Thapar University is taking these courses: ${courseNames}. Generate 3 creative and practical project ideas suitable for their level. For each idea, provide a brief (1-2 sentence) description and mention which courses it primarily draws upon. The ideas should be modern and relevant for a 2024 syllabus. Format with headings for each idea (e.g., ### Project Idea 1).`;
+            
+            const resultText = await makeApiCall(prompt);
+            modalContent.innerHTML = simpleMarkdownToHtml(resultText);
+        }
+        
+        async function getAIGoalPlan() {
+            goalPlanResult.innerHTML = "Calculating your path to success...";
+            const targetCgpa = parseFloat(cgpaGoalInput.value);
+            const targetSemId = parseInt(cgpaGoalSemesterSelect.value);
+
+            if (isNaN(targetCgpa) || targetCgpa <= 0 || targetCgpa > 10) {
+                goalPlanResult.innerHTML = "Please enter a valid CGPA goal between 1 and 10.";
+                return;
+            }
+            if (isNaN(targetSemId)) {
+                goalPlanResult.innerHTML = "Please select a target semester.";
+                return;
+            }
+
+            // 1. Calculate current state
+            let currentPoints = 0;
+            let currentCredits = 0;
+            activeSemesters.forEach(semId => {
+                const { totalPoints, totalCredits } = calculateSGPA(semId);
+                currentPoints += totalPoints;
+                currentCredits += totalCredits;
+            });
+
+            // 2. Calculate future state
+            let futureCredits = 0;
+            let futureCoursesList = [];
+            for (let semId = Math.max(...Array.from(activeSemesters).map(Number)) + 1; semId <= targetSemId; semId++) {
+                if (courseData[semId]) {
+                    futureCredits += courseData[semId].credits;
+                    futureCoursesList.push(`**${courseData[semId].name}**: ${courseData[semId].courses.map(c => c.name).join(', ')}`);
+                }
+            }
+
+            if (futureCredits === 0) {
+                goalPlanResult.innerHTML = "No future semesters selected to plan for. Add fewer semesters to plan for the future.";
+                return;
+            }
+
+            // 3. Check if possible
+            const totalCreditsToTarget = currentCredits + futureCredits;
+            const requiredTotalPoints = targetCgpa * totalCreditsToTarget;
+            const pointsNeededFromFuture = requiredTotalPoints - currentPoints;
+            const requiredAvgGradePoint = pointsNeededFromFuture / futureCredits;
+
+            if (requiredAvgGradePoint > 10) {
+                goalPlanResult.innerHTML = `This goal is mathematically impossible. You would need an average grade point of **${requiredAvgGradePoint.toFixed(2)}** in all future subjects, which is higher than an 'A' (10). Please aim for a more realistic CGPA.`;
+                return;
+            }
+            if (requiredAvgGradePoint < 4) {
+                 goalPlanResult.innerHTML = `This goal is easily achievable! You need an average grade point of only **${requiredAvgGradePoint.toFixed(2)}**, which is less than a 'D' grade. You can aim higher!`;
+                return;
+            }
+
+            // 4. Get AI plan
+            goalPlanResult.innerHTML = "Asking the AI strategist for your plan...";
+            const prompt = `You are an expert academic strategist for a Thapar University engineering student.
+            Current situation:
+            - CGPA: ${cgpaResultEl.textContent} over ${currentCredits} credits.
+            Goal:
+            - Achieve a CGPA of ${targetCgpa} by the end of ${courseData[targetSemId].name}.
+            Analysis:
+            - To achieve this, the student needs an average grade point of **${requiredAvgGradePoint.toFixed(2)}** across all remaining subjects until the target semester.
+            Upcoming Semesters & Courses:
+            ${futureCoursesList.join('\n')}
+
+            Your Task:
+            1. Briefly acknowledge the goal and confirm it's achievable.
+            2. Provide a high-level strategy. Suggest a realistic distribution of grades (e.g., "aim for mostly A's in core subjects, and B's in others") to meet the required average.
+            3. Identify 2-3 high-credit or foundational subjects from the upcoming list to prioritize for top grades.
+            4. Give one key piece of actionable advice for success.
+            Keep it encouraging and under 150 words. Format with simple Markdown.`;
+            
+            const resultText = await makeApiCall(prompt);
+            goalPlanResult.innerHTML = simpleMarkdownToHtml(resultText);
+        }
+
 
         // --- EVENT LISTENERS & INITIALIZATION ---
         
         addSemesterBtn.addEventListener('click', () => {
             const selectedSem = semesterAdder.value;
-            if (selectedSem) {
-                renderSemester(selectedSem);
-                calculateAll();
-            }
+            if (selectedSem) renderSemester(selectedSem);
+            calculateAll();
         });
         
         resetAllBtn.addEventListener('click', resetAll);
-
-        // Initial setup
-        document.addEventListener('DOMContentLoaded', () => {
-            updateSemesterAdder();
-            renderSemester('1');
+        analyzeBtn.addEventListener('click', getAIInsights);
+        getGoalPlanBtn.addEventListener('click', getAIGoalPlan);
+        modalCloseBtn.addEventListener('click', hideModal);
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) hideModal();
         });
 
+        document.addEventListener('DOMContentLoaded', () => {
+            updateSemesterAdders();
+            renderSemester('1');
+        });
     </script>
 </body>
 </html>
